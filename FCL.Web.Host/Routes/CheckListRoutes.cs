@@ -56,9 +56,9 @@ public static class CheckListRoutes
     }
 
     private static async Task<CheckListItemModel> CreateCheckListItem(ICheckListItemService checkListItemService,
-        string id)
+        string id, CheckListItemUpdateModel model)
     {
-        var item = await checkListItemService.Create(id, string.Empty);
+        var item = await checkListItemService.Create(id, model?.Text ?? string.Empty);
         return item.ToModel();
     }
 
