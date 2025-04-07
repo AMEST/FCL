@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCL.Web.Host", "FCL.Web.Host\FCL.Web.Host.csproj", "{91089031-03AD-41A5-A00B-503EAB50F423}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCL.Core", "FCL.Core\FCL.Core.csproj", "{4CC48AE2-9615-4BCF-9812-F9B4C3FF3CF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FCL.Storage", "FCL.Storage\FCL.Storage.csproj", "{9B3147B5-1CD0-4AEA-ACD5-F21483DD5A58}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{91089031-03AD-41A5-A00B-503EAB50F423}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91089031-03AD-41A5-A00B-503EAB50F423}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91089031-03AD-41A5-A00B-503EAB50F423}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91089031-03AD-41A5-A00B-503EAB50F423}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CC48AE2-9615-4BCF-9812-F9B4C3FF3CF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CC48AE2-9615-4BCF-9812-F9B4C3FF3CF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CC48AE2-9615-4BCF-9812-F9B4C3FF3CF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CC48AE2-9615-4BCF-9812-F9B4C3FF3CF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B3147B5-1CD0-4AEA-ACD5-F21483DD5A58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B3147B5-1CD0-4AEA-ACD5-F21483DD5A58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B3147B5-1CD0-4AEA-ACD5-F21483DD5A58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B3147B5-1CD0-4AEA-ACD5-F21483DD5A58}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
