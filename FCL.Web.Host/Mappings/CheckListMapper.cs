@@ -1,7 +1,7 @@
-using FastCheckList.Web.Host.Contracts;
-using FastCheckList.Core.Domain;
+using FCL.Core.Domain;
+using FCL.Web.Host.Contracts;
 
-namespace FastCheckList.Web.Host.Mappings;
+namespace FCL.Web.Host.Mappings;
 
 public static class CheckListMapper
 {

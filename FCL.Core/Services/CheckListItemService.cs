@@ -1,7 +1,7 @@
-using FastCheckList.Core.Domain;
+using FCL.Core.Domain;
 using Skidbladnir.Repository.Abstractions;
 
-namespace FastCheckList.Core.Services;
+namespace FCL.Core.Services;
 
 internal class CheckListItemService : ICheckListItemService
 {

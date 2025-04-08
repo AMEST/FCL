@@ -1,6 +1,6 @@
 using Skidbladnir.Repository.Abstractions;
 
-namespace FastCheckList.Core.Domain;
+namespace FCL.Core.Domain;
 
 public class CheckList : IHasId<string>
 {

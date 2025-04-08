@@ -1,4 +1,4 @@
-using FastCheckList.Core.Domain;
+using FCL.Core.Domain;
 using Skidbladnir.Repository.MongoDB;
 
 namespace FCL.Storage.Configuration;

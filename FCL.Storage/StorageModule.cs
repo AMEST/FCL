@@ -1,4 +1,4 @@
-using FastCheckList.Core.Domain;
+using FCL.Core.Domain;
 using FCL.Storage.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Skidbladnir.Repository.MongoDB;

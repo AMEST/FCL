@@ -1,7 +1,7 @@
-using FastCheckList.Core.Services;
+using FCL.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FastCheckList.Core;
+namespace FCL.Core;
 
 public static class CoreModule
 {

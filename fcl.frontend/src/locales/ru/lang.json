@@ -2,5 +2,8 @@
   "home": {
     "createButton": "Создать чеклист", 
     "creatingButton": "Создание..."
+  },
+  "checklist": {
+    "addNewItem": "Добавить элемент..."
   }
 }

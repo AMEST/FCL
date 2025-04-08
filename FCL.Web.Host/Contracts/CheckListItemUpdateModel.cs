@@ -1,4 +1,4 @@
-namespace FastCheckList.Web.Host.Contracts;
+namespace FCL.Web.Host.Contracts;
 
 public class CheckListItemUpdateModel
 {

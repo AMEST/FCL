@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FastCheckList.Web.Host.Contracts;
+namespace FCL.Web.Host.Contracts;
 
 public class CheckListUpdateModel
 {

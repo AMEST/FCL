@@ -1,6 +1,6 @@
-using FastCheckList.Core.Domain;
+using FCL.Core.Domain;
 
-namespace FastCheckList.Core.Services;
+namespace FCL.Core.Services;
 
 public interface ICheckListItemService
 {
