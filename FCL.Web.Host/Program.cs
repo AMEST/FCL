@@ -31,7 +31,6 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 
 app.UseStaticFiles();
-app.UseRouting();
 app.MapCheckLists();
 app.MapHub<CheckListHub>("/api/hubs/checklists", options => {
     options.TransportMaxBufferSize = 0;
