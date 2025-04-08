@@ -1,8 +1,9 @@
 // @ts-nocheck
-import React, { FC, useState, useEffect } from "react";
+import React, { FC, useState, useEffect, useRef } from "react";
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from "react-router-dom";
 import { TextField, Box, Button } from '@mui/material';
+import { HubConnectionBuilder, HubConnectionState, HttpTransportType, LogLevel } from '@microsoft/signalr';
 import CheckListItem from './CheckListItem';
 
 interface Checklist {
@@ -20,20 +21,66 @@ const CheckList: FC = () => {
   const [checklist, setChecklist] = useState<Checklist | null>(null);
   const [newItemText, setNewItemText] = useState('');
   const { t } = useTranslation();
+  const connectionRef = useRef(null);
 
   useEffect(() => {
-    // TODO: Fetch checklist data from API
+    // Initialize SignalR connection
+    const initConnection = async () => {
+      if(connectionRef.current !== null)
+        return;
+      const connection = new HubConnectionBuilder()
+        .withUrl('/api/hubs/checklists', {
+          skipNegotiation: true,
+          transport: HttpTransportType.WebSockets
+        })
+        .withAutomaticReconnect()
+        .configureLogging(LogLevel.Information)
+        .build();
+
+      connectionRef.current = connection;
+
+      // Handle checklist updates
+      connection.on('CheckListUpdates', (checkListId: string, checkListItemId?: string) => {
+        if (checkListId !== id) return;
+          // Update entire checklist
+          fetch(`/api/checklist/${id}`)
+            .then(res => res.json())
+            .then(data => {
+              setChecklist({id: data.id, title: data.title, items: []});
+              setTimeout(() => setChecklist(data), 1);
+            });
+      });
+
+      try {
+        await connection.start();
+        await connection.invoke('SubscribeToCheckList', id);
+      } catch (error) {
+        console.error('Error starting SignalR connection:', error);
+      }
+    };
+
+    // Fetch checklist data and initialize connection
     const fetchData = async () => {
       try {
         const response = await fetch(`/api/checklist/${id}`);
         const data = await response.json();
         setChecklist(data);
+        await initConnection();
       } catch (error) {
         console.error('Error fetching checklist:', error);
       }
     };
 
     fetchData();
+
+    // Cleanup on unmount or id change
+    return () => {
+      if (connectionRef.current?.state === HubConnectionState.Connected) {
+        connectionRef.current.invoke('UnsubscribeFromCheckList', id)
+          .catch(console.error);
+        connectionRef.current.stop();
+      }
+    };
   }, [id]);
 
   const handleTitleSave = async (newTitle: string) => {

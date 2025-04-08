@@ -26,15 +26,16 @@ builder.Services.AddSingleton<CheckListHub>();
 
 var app = builder.Build();
 
-app.MapHub<CheckListHub>("/ws/checklists", options => {
-    options.TransportMaxBufferSize = 0;
-    options.Transports = HttpTransportType.WebSockets;
-});
 
 if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 
 app.UseStaticFiles();
+app.UseRouting();
 app.MapCheckLists();
+app.MapHub<CheckListHub>("/api/hubs/checklists", options => {
+    options.TransportMaxBufferSize = 0;
+    options.Transports = HttpTransportType.WebSockets;
+});
 app.MapFallbackToFile("/index.html");
 app.Run();
