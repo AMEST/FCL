@@ -200,7 +200,7 @@ const CheckList: FC = () => {
         maxWidth: '800px',
         margin: '0 auto',
         padding: '24px',
-        paddingTop: { xs: '64px', sm: '24px' }
+        paddingTop: { xs: '64px', md: '24px' }
       }}
     >
       <TextField
