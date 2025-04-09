@@ -46,7 +46,7 @@ const CheckList: FC = () => {
           fetch(`/api/checklist/${id}`)
             .then(res => res.json())
             .then(data => {
-              setChecklist({id: data.id, title: data.title, items: []});
+              setChecklist({id: data.id, title: `${data.title} `, items: []});
               setTimeout(() => setChecklist(data), 1);
             });
       });

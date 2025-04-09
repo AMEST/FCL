@@ -35,3 +35,11 @@ docker run -d \
   -e "ConnectionStrings__Redis=your_redis_connection_string" \
   -p 8080:8080 \
   fcl
+```
+
+## MongoDB for develop
+
+Run mongodb locally for develop
+```
+docker run -d --name dev-mongodb -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=cronos -e MONGO_INITDB_ROOT_PASSWORD=test123 mongo
+```
