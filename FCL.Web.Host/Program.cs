@@ -11,7 +11,7 @@ builder.Services
     .AddStorageModule(builder.Configuration.GetValue<string>("ConnectionStrings:MongoDB", string.Empty))
     .AddCoreModule();
 
-builder.Services.AddSignalR(options => {
+var signalRBuilder = builder.Services.AddSignalR(options => {
     options.EnableDetailedErrors = true;
     options.ClientTimeoutInterval = TimeSpan.FromMinutes(1);
     options.KeepAliveInterval = TimeSpan.FromSeconds(30);
@@ -22,6 +22,9 @@ builder.Services.AddSignalR(options => {
     options.KeepAliveInterval = TimeSpan.FromSeconds(30);
     options.MaximumReceiveMessageSize = 32 * 1024;
 });
+var redisConnectionString = builder.Configuration.GetValue<string>("ConnectionStrings:Redis", string.Empty);
+if(!string.IsNullOrEmpty(redisConnectionString))
+    signalRBuilder.AddStackExchangeRedis(redisConnectionString);
 builder.Services.AddSingleton<CheckListHub>();
 
 var app = builder.Build();
@@ -30,6 +33,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 
+app.UseDefaultFiles();
 app.UseStaticFiles();
 app.MapCheckLists();
 app.MapHub<CheckListHub>("/api/hubs/checklists", options => {
