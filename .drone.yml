@@ -16,8 +16,8 @@ steps:
         from_secret: REGISTRY_PASS
     commands:
       - docker login -u $REGISTRY_LOGIN -p $REGISTRY_PASS
-      - docker build -t eluki/jutco:latest .
-      - docker push eluki/jutco:latest
+      - docker build -t eluki/fcl:latest .
+      - docker push eluki/fcl:latest
     when:
       branch:
         - master
