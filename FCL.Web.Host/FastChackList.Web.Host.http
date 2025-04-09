@@ -1,0 +1,6 @@
+@FastChackList.Web.Host_HostAddress = http://localhost:5249
+
+GET {{FastChackList.Web.Host_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
