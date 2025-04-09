@@ -31,8 +31,9 @@ const CheckList: FC = () => {
       const connection = new HubConnectionBuilder()
         .withUrl('/api/hubs/checklists', {
           skipNegotiation: true,
-          transport: HttpTransportType.WebSockets
+          transport: HttpTransportType.WebSockets,
         })
+        .withKeepAliveInterval(15000)
         .withAutomaticReconnect()
         .configureLogging(LogLevel.Information)
         .build();
@@ -49,6 +50,10 @@ const CheckList: FC = () => {
               setChecklist({id: data.id, title: `${data.title} `, items: []});
               setTimeout(() => setChecklist(data), 1);
             });
+      });
+
+      connection.onreconnected(connectionId => {
+        connection.invoke('SubscribeToCheckList', id);
       });
 
       try {

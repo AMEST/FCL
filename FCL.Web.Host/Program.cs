@@ -14,12 +14,12 @@ builder.Services
 var signalRBuilder = builder.Services.AddSignalR(options => {
     options.EnableDetailedErrors = true;
     options.ClientTimeoutInterval = TimeSpan.FromMinutes(1);
-    options.KeepAliveInterval = TimeSpan.FromSeconds(30);
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
     options.MaximumReceiveMessageSize = 32 * 1024;
 }).AddHubOptions<CheckListHub>(options => {
     options.EnableDetailedErrors = true;
     options.ClientTimeoutInterval = TimeSpan.FromMinutes(1);
-    options.KeepAliveInterval = TimeSpan.FromSeconds(30);
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
     options.MaximumReceiveMessageSize = 32 * 1024;
 });
 var redisConnectionString = builder.Configuration.GetValue<string>("ConnectionStrings:Redis", string.Empty);
