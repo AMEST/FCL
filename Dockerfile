@@ -4,10 +4,10 @@ COPY . ./
 RUN dotnet build -c Release --nologo;\
     dotnet publish FCL.Web.Host/FCL.Web.Host.csproj -c Release --no-build -o /dist/app
 
-FROM node:18-alpine AS frontend-build
+FROM node:20-alpine AS frontend-build
 WORKDIR /app
 COPY fcl.frontend/ .
-RUN npm install && npm run build
+RUN npm install --legacy-peer-deps && npm run build
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS app
 WORKDIR /app
