@@ -2,8 +2,9 @@
 import React, { FC, useState, useEffect, useRef } from "react";
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from "react-router-dom";
-import { TextField, Box, Button } from '@mui/material';
-import { HubConnectionBuilder, HubConnectionState, HttpTransportType, LogLevel } from '@microsoft/signalr';
+import { TextField, Box, CircularProgress } from '@mui/material';
+import { getCheckListById, updateCheckList, deleteCheckListItem, createCheckListItem, updateCheckListItem } from '../../utils/apiClient';
+import { HubConnectionBuilder, HubConnection, HubConnectionState, HttpTransportType, LogLevel } from '@microsoft/signalr';
 import CheckListItem from './CheckListItem';
 
 interface Checklist {
@@ -19,9 +20,11 @@ interface Checklist {
 const CheckList: FC = () => {
   const { id } = useParams();
   const [checklist, setChecklist] = useState<Checklist | null>(null);
+  const [checklistSnapShot, setChecklistSnapShot] = useState<Checklist | null>(null);
+  const checkListSnapShotRef = useRef<Checklist | null>(null);
   const [newItemText, setNewItemText] = useState('');
   const { t } = useTranslation();
-  const connectionRef = useRef(null);
+  const connectionRef = useRef<HubConnection>(null);
 
   useEffect(() => {
     // Initialize SignalR connection
@@ -41,15 +44,21 @@ const CheckList: FC = () => {
       connectionRef.current = connection;
 
       // Handle checklist updates
-      connection.on('CheckListUpdates', (checkListId: string, checkListItemId?: string) => {
+      connection.on('CheckListUpdates', async (checkListId: string, checkListItemId?: string) => {
         if (checkListId !== id) return;
+        console.log(connectionRef.current);
+        console.log(checkListSnapShotRef.current);
           // Update entire checklist
-          fetch(`/api/checklist/${id}`)
-            .then(res => res.json())
-            .then(data => {
-              setChecklist({id: data.id, title: `${data.title} `, items: []});
-              setTimeout(() => setChecklist(data), 1);
-            });
+        const response = await getCheckListById(id)
+        const data : Checklist = response.data;
+
+        if(areCheckListsEqual(checkListSnapShotRef.current, data))
+          return;
+
+        setChecklist({id: data.id, title: `${data.title} `, items: []});
+        updateCheckListSnapshot(data);
+        setTimeout(() => setChecklist(data), 1);
+      
       });
 
       connection.onreconnected(connectionId => {
@@ -67,9 +76,9 @@ const CheckList: FC = () => {
     // Fetch checklist data and initialize connection
     const fetchData = async () => {
       try {
-        const response = await fetch(`/api/checklist/${id}`);
-        const data = await response.json();
-        setChecklist(data);
+        const response = await getCheckListById(id);
+        setChecklist(response.data);
+        updateCheckListSnapshot(response.data);
         await initConnection();
       } catch (error) {
         console.error('Error fetching checklist:', error);
@@ -88,17 +97,30 @@ const CheckList: FC = () => {
     };
   }, [id]);
 
+  const updateCheckListSnapshot = (list: Checklist) => {
+    setChecklistSnapShot(list);
+    checkListSnapShotRef.current = list;
+  }
+
+  const areCheckListsEqual = (a: Checklist | null, b: Checklist | null): boolean => {
+    if (a === b) return true;
+    if (!a || !b) return false;
+    if (a.id !== b.id || a.title !== b.title) return false;
+    if (a.items.length !== b.items.length) return false;
+    
+    return a.items.every((itemA, index) => {
+      const itemB = b.items[index];
+      return itemA.id === itemB.id && 
+             itemA.text === itemB.text && 
+             itemA.isChecked === itemB.isChecked;
+    });
+  };
+
   const handleTitleSave = async (newTitle: string) => {
-    if (!checklist) return;
+    if (!checklist || checklistSnapShot.title === newTitle) return;
     
     try {
-      await fetch(`/api/checklist/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text: newTitle }),
-      });
+      await updateCheckList(id, { text: newTitle });
       setChecklist({ ...checklist, title: newTitle });
     } catch (error) {
       console.error('Error updating title:', error);
@@ -108,19 +130,17 @@ const CheckList: FC = () => {
   const handleItemSave = async (itemId: string, text: string, isChecked: boolean) => {
     if (!checklist) return;
     
+    const item = checklistSnapShot.items.find(i => i.id === itemId);
+    if (item && item.text === text && item.isChecked === isChecked) return;
+    
     try {
-      await fetch(`/api/checklist/${id}/${itemId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text, isChecked }),
-      });
-      
+      await updateCheckListItem(id, itemId, { text, isChecked });
+      if(connectionRef.current && connectionRef.current.state === HubConnectionState.Connected)
+        return;
       // Refresh checklist state
-      const response = await fetch(`/api/checklist/${id}`);
-      const data = await response.json();
-      setChecklist(data);
+      const response = await getCheckListById(id);
+      setChecklist(response.data);
+      updateCheckListSnapshot(response.data);
     } catch (error) {
       console.error('Error updating item:', error);
     }
@@ -130,14 +150,13 @@ const CheckList: FC = () => {
     if (!checklist) return;
     
     try {
-      await fetch(`/api/checklist/${id}/${itemId}`, {
-        method: 'DELETE',
-      });
-      
+      await deleteCheckListItem(id, itemId);
+      if(connectionRef.current && connectionRef.current.state === HubConnectionState.Connected)
+        return;      
       // Refresh checklist state
-      const response = await fetch(`/api/checklist/${id}`);
-      const data = await response.json();
-      setChecklist(data);
+      const response = await getCheckListById(id);
+      setChecklist(response.data);
+      updateCheckListSnapshot(response.data);
     } catch (error) {
       console.error('Error deleting item:', error);
     }
@@ -148,19 +167,14 @@ const CheckList: FC = () => {
     if (!checklist || !newItemText.trim()) return;
     
     try {
-      await fetch(`/api/checklist/${id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text: newItemText }),
-      });
-      
-      // Refresh checklist state
-      const response = await fetch(`/api/checklist/${id}`);
-      const data = await response.json();
-      setChecklist(data);
+      await createCheckListItem(id, { text: newItemText });
       setNewItemText('');
+      if(connectionRef.current && connectionRef.current.state === HubConnectionState.Connected)
+        return;
+      // Refresh checklist state
+      const response = await getCheckListById(id);
+      setChecklist(response.data);
+      updateCheckListSnapshot(response.data);
     } catch (error) {
       console.error('Error creating item:', error);
     }
@@ -169,7 +183,18 @@ const CheckList: FC = () => {
   const navigate = useNavigate();
 
   if (!checklist) {
-    return <div>Loading...</div>;
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh'
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
   }
 
   return (

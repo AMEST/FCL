@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
 import { Container, Box, Button } from '@mui/material';
+import { createCheckList } from '../../utils/apiClient';
 
 interface HomeProps {}
 
@@ -15,18 +16,8 @@ const Home: FC<HomeProps> = () => {
   const handleCreateChecklist = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/checklist', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to create checklist');
-      }
-      const { id } = await response.json();
-      navigate(`/list/${id}`);
+      const result = await createCheckList();
+      navigate(`/list/${result.data.id}`);
     } catch (error) {
       console.error(error);
       setIsLoading(false);
